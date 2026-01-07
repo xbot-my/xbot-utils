@@ -118,6 +118,47 @@ $app->addCommand(new YourCommand());
 
 4. Run `composer dump-autoload` to regenerate the autoloader.
 
+## Testing
+
+The project uses [Pest](https://pestphp.com/) as the testing framework.
+
+### Running Tests
+
+```bash
+# Run all tests
+./vendor/bin/pest
+
+# Run specific test suite
+./vendor/bin/pest tests/Unit/Commands
+
+# Run with detailed output
+./vendor/bin/pest --compact
+```
+
+### Test Structure
+
+```
+tests/
+├── Unit/
+│   └── Commands/
+│       ├── CommandTestHelpers.php    # Test helper utilities
+│       ├── CleanCommandTest.php      # Tests for clean command
+│       ├── SetupCommandTest.php      # Tests for setup command
+│       └── SysinfoCommandTest.php    # Tests for sysinfo command
+├── Feature/
+│   └── ExampleTest.php
+├── Pest.php                          # Pest configuration
+└── TestCase.php                      # Base test case
+```
+
+### Test Coverage
+
+Each command test covers:
+- Command name and description verification
+- Successful execution scenarios
+- Script failure handling
+- Error handling (script not found, not executable)
+
 ## License
 
 MIT
