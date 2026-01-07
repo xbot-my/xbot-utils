@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+namespace Xbot\Utils;
+
+use Symfony\Component\Console\Application;
+use Xbot\Utils\Command\CleanCommand;
+use Xbot\Utils\Command\SetupCommand;
+use Xbot\Utils\Command\SysinfoCommand;
+
+$autoloadPath = dirname(__DIR__) . '/vendor/autoload.php';
+
+if (!file_exists($autoloadPath)) {
+    fwrite(STDERR, "Error: vendor/autoload.php not found. Please run: composer install\n");
+    exit(1);
+}
+
+require $autoloadPath;
+
+$app = new Application('XBot Utils', '1.0.0');
+$app->addCommand(new CleanCommand());
+$app->addCommand(new SetupCommand());
+$app->addCommand(new SysinfoCommand());
+$app->run();
