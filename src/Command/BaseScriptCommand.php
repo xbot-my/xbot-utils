@@ -12,9 +12,19 @@ use Xbot\Utils\executeScript;
 
 abstract class BaseScriptCommand extends Command
 {
+    protected $scriptExecutor = null;
+
     abstract protected function getScriptPath(): string;
     abstract protected function getStartMessage(): string;
     abstract protected function getSuccessMessage(): string;
+
+    /**
+     * 设置脚本执行器（用于测试）
+     */
+    public function setScriptExecutor(?callable $executor): void
+    {
+        $this->scriptExecutor = $executor;
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -29,7 +39,8 @@ abstract class BaseScriptCommand extends Command
         $args = array_slice($rawArgs, 2);
 
         try {
-            $exitCode = executeScript($scriptPath, $args);
+            $executor = $this->scriptExecutor ?? fn($path, $args) => executeScript($path, $args);
+            $exitCode = $executor($scriptPath, $args);
 
             $io->newLine();
 

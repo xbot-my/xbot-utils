@@ -19,6 +19,11 @@
 	   "src/func.php"
 	]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "XBot Dev",
