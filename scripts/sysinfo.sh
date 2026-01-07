@@ -662,7 +662,7 @@ check_system_performance() {
         # 内存使用率
         MEM_INFO=$(vm_stat | awk '/^Mach Virtual Memory Statistics:/ { found=1 } found && /Pages free/ { free=$3 } found && /Pages active/ { active=$3 } found && /Pages inactive/ { inactive=$3 } found && /Pages speculative/ { spec=$3 } END { total = free + active + inactive + spec; print active/total*100 }' 2>/dev/null)
         if [ ! -z "$MEM_INFO" ]; then
-            echo -e "${CYAN}活跃内存使用率: ${NC}$(printf "%.2f%%" $MEM_INFO)"
+            echo -e "${CYAN}活跃内存使用率: ${NC}$(printf "%.2f%%" "$MEM_INFO")"
         fi
     fi
 }
@@ -731,6 +731,7 @@ main() {
         echo -e "${YELLOW}⚠ 发现 $total_missing 个缺失的组件，可能需要安装以支持 Laravel 开发${NC}"
     fi
     
+    # shellcheck disable=SC2004
     echo -e "\n${CYAN}运行时长: $(($(date +%s) - $SECONDS)) 秒${NC}"
 }
 
