@@ -47,7 +47,7 @@ jobs:
           fi
 
       - name: Execute tests
-        run: vendor/bin/pest --ci
+        run: vendor/bin/pest --compact
 
   code-style:
     name: Code Style (PHP CS Fixer)
@@ -62,7 +62,7 @@ jobs:
         with:
           php-version: '8.3'
           coverage: none
-          tools: composer:v2, php-cs-fixer:dev-master
+          tools: composer:v2
 
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -79,7 +79,7 @@ jobs:
         run: composer install --no-interaction --no-progress
 
       - name: Run PHP CS Fixer (dry-run)
-        run: php-cs-fixer fix --dry-run --diff --verbose
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
 
   static-analysis:
     name: Static Analysis (PHPStan)

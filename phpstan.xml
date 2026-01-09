@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpstan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/phpstan/phpstan/master/phpstan.xsd">
+    <parameters>
+        <paths>
+            <path>src</path>
+        </paths>
+        <level>5</level>
+        <ignoreErrors>
+            <!-- Ignore Symfony Console's mixed types -->
+            <errorIdentifier>mixedReturnType</errorIdentifier>
+        </ignoreErrors>
+    </parameters>
+</phpstan>
