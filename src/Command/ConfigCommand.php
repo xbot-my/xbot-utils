@@ -9,6 +9,9 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
+use Symfony\Component\Console\Completion\Suggestion;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -272,6 +275,63 @@ class ConfigCommand extends Command
             } else {
                 $formattedValue = $this->formatValue($value);
                 $io->writeln(sprintf('<fg=cyan;options=bold>%s</> = %s', $fullKey, $formattedValue));
+            }
+        }
+    }
+
+    /**
+     * 提供命令补全建议
+     */
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        parent::complete($input, $suggestions);
+
+        // 补全 action 参数：set, get, list, edit
+        if ($input->mustSuggestArgumentValuesFor('action')) {
+            $suggestions->suggestValues([
+                new Suggestion('set', 'Set a configuration value'),
+                new Suggestion('get', 'Get a configuration value'),
+                new Suggestion('list', 'List all configuration'),
+                new Suggestion('edit', 'Edit configuration file'),
+            ]);
+            return;
+        }
+
+        // 补全 key 参数：基于当前配置文件中的键
+        if ($input->mustSuggestArgumentValuesFor('key')) {
+            $this->configManager = new ConfigManager(dirname(__DIR__, 2));
+            $configKeys = $this->getAvailableConfigKeys();
+            $suggestions->suggestValues($configKeys);
+        }
+    }
+
+    /**
+     * 获取所有可用的配置键
+     *
+     * @return array<string>
+     */
+    private function getAvailableConfigKeys(): array
+    {
+        $config = $this->configManager->all();
+        $keys = [];
+        $this->flattenConfigKeys($config, '', $keys);
+        return array_keys($keys);
+    }
+
+    /**
+     * 扁平化配置键数组
+     *
+     * @param array<mixed> $config
+     * @param array<string, bool> $keys
+     */
+    private function flattenConfigKeys(array $config, string $prefix, array &$keys): void
+    {
+        foreach ($config as $key => $value) {
+            $fullKey = $prefix ? $prefix . '.' . $key : $key;
+            if (is_array($value)) {
+                $this->flattenConfigKeys($value, $fullKey, $keys);
+            } else {
+                $keys[$fullKey] = true;
             }
         }
     }
