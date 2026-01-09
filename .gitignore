@@ -3,9 +3,9 @@
 /.idea
 /.fleet
 /.vscode
-
+/.claude
 *.log
 composer.lock
 packages.lock
 .DS_Store
-.env
+.env 
