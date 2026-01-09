@@ -14,6 +14,7 @@ use Xbot\Utils\Command\InfoCommand;
 use Xbot\Utils\Command\ConfigCommand;
 use Xbot\Utils\Command\ServiceCommand;
 use Xbot\Utils\Command\DatabaseCommand;
+use Xbot\Utils\Command\ScheduleCommand;
 
 $autoloadPath = dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -33,4 +34,5 @@ $app->addCommand(new InfoCommand());
 $app->addCommand(new ConfigCommand());
 $app->addCommand(new ServiceCommand());
 $app->addCommand(new DatabaseCommand());
+$app->addCommand(new ScheduleCommand());
 $app->run();

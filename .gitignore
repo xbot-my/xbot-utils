@@ -8,4 +8,8 @@
 composer.lock
 packages.lock
 .DS_Store
-.env 
+.env
+
+# Scheduled task configuration
+.xbot/scheduled_tasks.json
+.xbot/crontab
