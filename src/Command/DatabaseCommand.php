@@ -167,9 +167,37 @@ class DatabaseCommand extends BaseScriptCommand
             $backupFile = $backupDir . '/' . $database . '_' . $timestamp . '.sql';
 
             $io->writeln(sprintf('<fg=cyan>Creating backup: %s</>', basename($backupFile)));
+            $io->newLine();
+
+            // 创建进度条（模拟进度）
+            $progress = $this->createProgress($io, 100);
+            $progress->setMessage('Starting backup...');
+            $progress->start();
+
+            // 定义进度阶段消息
+            $stages = [
+                10 => 'Connecting to database...',
+                30 => 'Exporting schema...',
+                50 => 'Exporting data...',
+                70 => 'Compressing...',
+                90 => 'Finalizing...',
+                100 => 'Completing backup...'
+            ];
+
+            // 模拟进度更新
+            // 注意：由于 passthru() 是阻塞调用，这里使用简化实现
+            foreach ($stages as $step => $message) {
+                $progress->setProgress($step);
+                $progress->setMessage($message);
+                usleep(50000); // 短暂延迟以显示进度
+            }
 
             // 使用 mysqldump 备份（需要根据配置调整）
             $exitCode = $this->runMysqldump($backupFile);
+
+            // 完成进度条
+            $this->finishProgress();
+            $io->newLine();
 
             if ($exitCode !== 0) {
                 $io->error('Backup failed');

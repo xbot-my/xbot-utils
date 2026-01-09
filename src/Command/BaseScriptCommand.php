@@ -12,6 +12,7 @@ use Xbot\Utils\executeScript;
 use Xbot\Utils\ScriptExecutor;
 use Xbot\Utils\executeScriptWithResult;
 use Xbot\Utils\Config\ConfigManager;
+use Xbot\Utils\Output\ProgressHelper;
 
 abstract class BaseScriptCommand extends Command
 {
@@ -22,6 +23,9 @@ abstract class BaseScriptCommand extends Command
 
     // 配置管理器实例
     private static ?ConfigManager $configManager = null;
+
+    // 进度条辅助类实例
+    private ?ProgressHelper $progressHelper = null;
 
     abstract protected function getScriptPath(): string;
     abstract protected function getStartMessage(): string;
@@ -71,6 +75,66 @@ abstract class BaseScriptCommand extends Command
     public static function resetConfigManager(): void
     {
         self::$configManager = null;
+    }
+
+    /**
+     * 创建进度条
+     *
+     * @param OutputInterface $output 输出接口
+     * @param int $max 最大步数
+     * @param string $format 格式类型 (default, simple, verbose)
+     * @return ProgressHelper
+     */
+    protected function createProgress(OutputInterface $output, int $max, string $format = 'default'): ProgressHelper
+    {
+        $this->progressHelper = new ProgressHelper($output);
+        return $this->progressHelper->create($max, $format);
+    }
+
+    /**
+     * 更新进度（相对步进）
+     *
+     * @param int $step 步数
+     * @param string $message 进度消息
+     */
+    protected function updateProgress(int $step, string $message = ''): void
+    {
+        if ($this->progressHelper !== null) {
+            $this->progressHelper->advance($step, $message);
+        }
+    }
+
+    /**
+     * 设置绝对进度
+     *
+     * @param int $current 当前进度
+     * @param string $message 进度消息
+     */
+    protected function setProgress(int $current, string $message = ''): void
+    {
+        if ($this->progressHelper !== null) {
+            $this->progressHelper->setProgress($current, $message);
+        }
+    }
+
+    /**
+     * 完成进度条
+     */
+    protected function finishProgress(): void
+    {
+        if ($this->progressHelper !== null) {
+            $this->progressHelper->finish();
+            $this->progressHelper = null;
+        }
+    }
+
+    /**
+     * 获取进度条辅助类实例
+     * 用于需要直接访问 ProgressHelper 高级功能的场景
+     */
+    protected function getProgressHelper(): ?ProgressHelper
+    {
+        return $this->progressHelper;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
