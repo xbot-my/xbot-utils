@@ -191,7 +191,7 @@ class LogCommand extends Command
      */
     private function filterByLevel(array $lines, string $level): array
     {
-        return array_filter($lines, fn($line) => $this->matchesLevel($line, $level));
+        return array_filter($lines, fn ($line) => $this->matchesLevel($line, $level));
     }
 
     /**

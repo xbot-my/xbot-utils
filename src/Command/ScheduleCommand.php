@@ -133,7 +133,7 @@ class ScheduleCommand extends Command
         $asJson = $input->getOption('json');
 
         if ($asJson) {
-            $data = array_map(fn(Task $task) => $task->toArray(), $tasks);
+            $data = array_map(fn (Task $task) => $task->toArray(), $tasks);
             $io->writeln(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
             return Command::SUCCESS;
         }

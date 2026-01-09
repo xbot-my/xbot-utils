@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Xbot\Utils\Plugin;
 
-use Symfony\Component\Console\Application;
 use RuntimeException;
 
 /**

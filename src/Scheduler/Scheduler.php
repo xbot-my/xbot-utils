@@ -173,7 +173,7 @@ class Scheduler
 
         $currentCrontab = $this->getSystemCrontab();
 
-        $lines = array_filter($currentCrontab, function($line) {
+        $lines = array_filter($currentCrontab, function ($line) {
             $trimmed = trim($line);
             if ($trimmed === '' || str_starts_with($trimmed, '#')) {
                 return false;
@@ -192,7 +192,7 @@ class Scheduler
     {
         $currentCrontab = $this->getSystemCrontab();
 
-        $lines = array_filter($currentCrontab, function($line) {
+        $lines = array_filter($currentCrontab, function ($line) {
             $trimmed = trim($line);
             if ($trimmed === '') {
                 return true;

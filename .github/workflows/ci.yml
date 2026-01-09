@@ -48,7 +48,7 @@ jobs:
           fi
 
       - name: Execute tests
-        run: vendor/bin/pest --compact
+        run: vendor/bin/pest
 
   code-style:
     name: Code Style (PHP CS Fixer)

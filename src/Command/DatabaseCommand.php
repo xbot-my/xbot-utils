@@ -359,7 +359,7 @@ class DatabaseCommand extends BaseScriptCommand
         }
 
         // 按修改时间降序排序
-        usort($files, fn($a, $b) => filemtime($b) - filemtime($a));
+        usort($files, fn ($a, $b) => filemtime($b) - filemtime($a));
 
         return $files;
     }

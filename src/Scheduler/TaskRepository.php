@@ -39,7 +39,7 @@ class TaskRepository
      */
     public function getEnabledTasks(): array
     {
-        return array_filter($this->tasks, fn(Task $task) => $task->isEnabled());
+        return array_filter($this->tasks, fn (Task $task) => $task->isEnabled());
     }
 
     public function find(string $id): ?Task
@@ -112,7 +112,7 @@ class TaskRepository
             }
         }
 
-        $data = array_map(fn(Task $task) => $task->toArray(), $this->tasks);
+        $data = array_map(fn (Task $task) => $task->toArray(), $this->tasks);
 
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($json === false) {

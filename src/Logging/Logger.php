@@ -143,7 +143,7 @@ class Logger
         $timestamp = date('Y-m-d H:i:s');
         $formattedMessage = $this->formatMessage($message, $context);
 
-        return sprintf("[%s] %s: %s", $timestamp, $level, $formattedMessage);
+        return sprintf('[%s] %s: %s', $timestamp, $level, $formattedMessage);
     }
 
     /**
@@ -328,8 +328,8 @@ class Logger
         $baseNamePattern = str_replace('.', '\\.', $baseName);
         $pattern = '/^' . $baseNamePattern . '(\\.\\d+)?$/';
 
-        $filtered = array_filter($files, fn($file) => preg_match($pattern, basename($file)));
-        usort($filtered, fn($a, $b) => filemtime($b) - filemtime($a));
+        $filtered = array_filter($files, fn ($file) => preg_match($pattern, basename($file)));
+        usort($filtered, fn ($a, $b) => filemtime($b) - filemtime($a));
 
         return $filtered;
     }

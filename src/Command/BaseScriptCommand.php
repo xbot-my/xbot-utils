@@ -8,12 +8,11 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Xbot\Utils\executeScript;
-use Xbot\Utils\ScriptExecutor;
-use Xbot\Utils\executeScriptWithResult;
 use Xbot\Utils\Config\ConfigManager;
-use Xbot\Utils\Output\ProgressHelper;
+use Xbot\Utils\executeScript;
 use Xbot\Utils\Logging\Logger;
+use Xbot\Utils\Output\ProgressHelper;
+use Xbot\Utils\ScriptExecutor;
 
 abstract class BaseScriptCommand extends Command
 {
