@@ -1,0 +1,19 @@
+{
+    "name": "example",
+    "version": "1.0.0",
+    "description": "An example plugin demonstrating xbot plugin development",
+    "author": "XBot Dev",
+    "homepage": "https://github.com/xbot-my/xbot-utils",
+    "license": "MIT",
+    "requires": {
+        "php": ">=8.3",
+        "xbot-utils": ">=1.0.0"
+    },
+    "dependencies": [],
+    "main": "ExamplePlugin\\ExamplePlugin",
+    "autoload": {
+        "psr-4": {
+            "ExamplePlugin\\": "src/"
+        }
+    }
+}
