@@ -30,6 +30,9 @@
             "email": "contact@xbot.my"
         }
     ],
+    "bin": [
+        "bin/xbot"
+    ],
     "minimum-stability": "stable",
     "config": {
         "allow-plugins": {
