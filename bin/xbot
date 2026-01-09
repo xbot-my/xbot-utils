@@ -15,6 +15,9 @@ use Xbot\Utils\Command\ConfigCommand;
 use Xbot\Utils\Command\ServiceCommand;
 use Xbot\Utils\Command\DatabaseCommand;
 use Xbot\Utils\Command\ScheduleCommand;
+use Xbot\Utils\Command\PluginCommand;
+use Xbot\Utils\Plugin\PluginManager;
+use Xbot\Utils\Config\ConfigManager;
 
 $autoloadPath = dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -35,4 +38,18 @@ $app->addCommand(new ConfigCommand());
 $app->addCommand(new ServiceCommand());
 $app->addCommand(new DatabaseCommand());
 $app->addCommand(new ScheduleCommand());
+$app->addCommand(new PluginCommand());
+
+// Initialize configuration manager
+$projectRoot = dirname(__DIR__);
+$config = new ConfigManager($projectRoot);
+
+// Initialize plugin manager and boot enabled plugins
+$pluginManager = new PluginManager($projectRoot, $config);
+try {
+    $pluginManager->bootPlugins($app);
+} catch (\Exception $e) {
+    fwrite(STDERR, sprintf("Warning: Failed to load plugins: %s\n", $e->getMessage()));
+}
+
 $app->run();
