@@ -1,0 +1,10 @@
+{
+    "output": {
+        "color": "auto",
+        "format": "text"
+    },
+    "script": {
+        "timeout": 600,
+        "path": "./scripts"
+    }
+}

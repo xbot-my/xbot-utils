@@ -11,6 +11,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Xbot\Utils\executeScript;
 use Xbot\Utils\ScriptExecutor;
 use Xbot\Utils\executeScriptWithResult;
+use Xbot\Utils\Config\ConfigManager;
 
 abstract class BaseScriptCommand extends Command
 {
@@ -19,9 +20,25 @@ abstract class BaseScriptCommand extends Command
     // 默认超时时间（秒），子类可以覆盖
     protected int $scriptTimeout = 300;
 
+    // 配置管理器实例
+    private static ?ConfigManager $configManager = null;
+
     abstract protected function getScriptPath(): string;
     abstract protected function getStartMessage(): string;
     abstract protected function getSuccessMessage(): string;
+
+    /**
+     * 获取配置管理器实例
+     */
+    protected function getConfig(): ConfigManager
+    {
+        if (self::$configManager === null) {
+            $projectRoot = dirname(__DIR__, 2);
+            self::$configManager = new ConfigManager($projectRoot);
+        }
+
+        return self::$configManager;
+    }
 
     /**
      * 设置脚本执行器（用于测试）
@@ -33,18 +50,27 @@ abstract class BaseScriptCommand extends Command
 
     /**
      * 获取脚本超时时间（秒）
+     * 优先从配置读取，否则使用默认值
      */
     protected function getScriptTimeout(): int
     {
-        return $this->scriptTimeout;
+        return $this->getConfig()->get('script.timeout', $this->scriptTimeout);
     }
 
     /**
-     * 设置脚本超时时间
+     * 设置脚本超时时间（用于测试）
      */
     public function setScriptTimeout(int $timeout): void
     {
         $this->scriptTimeout = max(1, $timeout);
+    }
+
+    /**
+     * 重置配置管理器（主要用于测试）
+     */
+    public static function resetConfigManager(): void
+    {
+        self::$configManager = null;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -11,6 +11,7 @@ use Xbot\Utils\Command\SetupCommand;
 use Xbot\Utils\Command\SysinfoCommand;
 use Xbot\Utils\Command\SearchCommand;
 use Xbot\Utils\Command\InfoCommand;
+use Xbot\Utils\Command\ConfigCommand;
 
 $autoloadPath = dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -27,4 +28,5 @@ $app->addCommand(new SetupCommand());
 $app->addCommand(new SysinfoCommand());
 $app->addCommand(new SearchCommand());
 $app->addCommand(new InfoCommand());
+$app->addCommand(new ConfigCommand());
 $app->run();
