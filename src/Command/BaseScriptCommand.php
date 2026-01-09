@@ -13,6 +13,7 @@ use Xbot\Utils\ScriptExecutor;
 use Xbot\Utils\executeScriptWithResult;
 use Xbot\Utils\Config\ConfigManager;
 use Xbot\Utils\Output\ProgressHelper;
+use Xbot\Utils\Logging\Logger;
 
 abstract class BaseScriptCommand extends Command
 {
@@ -26,6 +27,9 @@ abstract class BaseScriptCommand extends Command
 
     // 进度条辅助类实例
     private ?ProgressHelper $progressHelper = null;
+
+    // 日志记录器实例
+    private static ?Logger $logger = null;
 
     abstract protected function getScriptPath(): string;
     abstract protected function getStartMessage(): string;
@@ -42,6 +46,22 @@ abstract class BaseScriptCommand extends Command
         }
 
         return self::$configManager;
+    }
+
+    /**
+     * 获取日志记录器实例
+     */
+    protected function getLogger(): Logger
+    {
+        if (self::$logger === null) {
+            $projectRoot = dirname(__DIR__, 2);
+            $logFile = $projectRoot . '/storage/logs/xbot.log';
+            $minLevel = $this->getConfig()->get('log.level', Logger::INFO);
+
+            self::$logger = new Logger($logFile, maxFileSize: 10485760, maxFiles: 5, minLevel: $minLevel);
+        }
+
+        return self::$logger;
     }
 
     /**
@@ -137,6 +157,14 @@ abstract class BaseScriptCommand extends Command
         return $this->progressHelper;
     }
 
+    /**
+     * 重置日志记录器（主要用于测试）
+     */
+    public static function resetLogger(): void
+    {
+        self::$logger = null;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -149,6 +177,9 @@ abstract class BaseScriptCommand extends Command
         $rawArgs = $_SERVER['argv'] ?? [];
         $args = array_slice($rawArgs, 2);
 
+        // 记录命令开始执行
+        $this->getLogger()->info(sprintf('Command started: %s %s', $this->getName(), implode(' ', $args)));
+
         try {
             $exitCode = $this->executeScript($scriptPath, $args);
 
@@ -156,13 +187,16 @@ abstract class BaseScriptCommand extends Command
 
             if ($exitCode === 0) {
                 $io->success($this->getSuccessMessage());
+                $this->getLogger()->info(sprintf('Command completed: %s', $this->getName()));
                 return Command::SUCCESS;
             } else {
                 $io->error(sprintf('Command failed with exit code: %d', $exitCode));
+                $this->getLogger()->error(sprintf('Command failed: %s (exit code: %d)', $this->getName(), $exitCode));
                 return $exitCode;
             }
         } catch (\RuntimeException $e) {
             $io->error($e->getMessage());
+            $this->getLogger()->error(sprintf('Command error: %s - %s', $this->getName(), $e->getMessage()));
             return Command::FAILURE;
         }
     }
@@ -181,7 +215,7 @@ abstract class BaseScriptCommand extends Command
 
         // 使用相对路径执行脚本
         $relativeScriptPath = $this->getScriptPath();
-        return executeScript($relativeScriptPath, $args);
+        return \Xbot\Utils\executeScript($relativeScriptPath, $args);
     }
 
     /**
