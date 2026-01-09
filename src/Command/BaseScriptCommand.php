@@ -12,6 +12,7 @@ use Xbot\Utils\executeScript;
 use Xbot\Utils\ScriptExecutor;
 use Xbot\Utils\executeScriptWithResult;
 use Xbot\Utils\Config\ConfigManager;
+use Xbot\Utils\Logging\Logger;
 
 abstract class BaseScriptCommand extends Command
 {
@@ -22,6 +23,9 @@ abstract class BaseScriptCommand extends Command
 
     // 配置管理器实例
     private static ?ConfigManager $configManager = null;
+
+    // 日志记录器实例
+    private ?Logger $logger = null;
 
     abstract protected function getScriptPath(): string;
     abstract protected function getStartMessage(): string;
@@ -73,6 +77,28 @@ abstract class BaseScriptCommand extends Command
         self::$configManager = null;
     }
 
+    /**
+     * 获取日志记录器实例
+     */
+    protected function getLogger(): Logger
+    {
+        if ($this->logger === null) {
+            $projectRoot = dirname(__DIR__, 2);
+            $this->logger = new Logger($projectRoot, $this->getName());
+            $this->logger->setConfig($this->getConfig());
+        }
+
+        return $this->logger;
+    }
+
+    /**
+     * 重置日志记录器（主要用于测试）
+     */
+    public function resetLogger(): void
+    {
+        $this->logger = null;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -85,19 +111,33 @@ abstract class BaseScriptCommand extends Command
         $rawArgs = $_SERVER['argv'] ?? [];
         $args = array_slice($rawArgs, 2);
 
+        // 记录命令开始
+        $startTime = microtime(true);
+        $this->getLogger()->logCommandStart($this->getName(), $args);
+
         try {
             $exitCode = $this->executeScript($scriptPath, $args);
 
             $io->newLine();
 
             if ($exitCode === 0) {
+                $duration = microtime(true) - $startTime;
+                $this->getLogger()->logCommandSuccess($this->getName(), $duration);
+
                 $io->success($this->getSuccessMessage());
                 return Command::SUCCESS;
             } else {
+                $this->getLogger()->logCommandFailure($this->getName(), $exitCode, 'Script returned non-zero exit code');
                 $io->error(sprintf('Command failed with exit code: %d', $exitCode));
                 return $exitCode;
             }
         } catch (\RuntimeException $e) {
+            $this->getLogger()->logCommandFailure($this->getName(), Command::FAILURE, $e->getMessage());
+            $this->getLogger()->error(sprintf('Exception: %s', $e->getMessage()), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
             $io->error($e->getMessage());
             return Command::FAILURE;
         }

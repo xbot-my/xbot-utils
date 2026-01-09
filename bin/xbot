@@ -16,6 +16,7 @@ use Xbot\Utils\Command\ServiceCommand;
 use Xbot\Utils\Command\DatabaseCommand;
 use Xbot\Utils\Command\ScheduleCommand;
 use Xbot\Utils\Command\PluginCommand;
+use Xbot\Utils\Command\LogCommand;
 use Xbot\Utils\Plugin\PluginManager;
 use Xbot\Utils\Config\ConfigManager;
 
@@ -39,6 +40,7 @@ $app->addCommand(new ServiceCommand());
 $app->addCommand(new DatabaseCommand());
 $app->addCommand(new ScheduleCommand());
 $app->addCommand(new PluginCommand());
+$app->addCommand(new LogCommand());
 
 // Initialize configuration manager
 $projectRoot = dirname(__DIR__);

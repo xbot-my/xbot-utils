@@ -22,6 +22,12 @@ class ConfigManager
             'timeout' => 300,   // 默认 5 分钟超时
             'path' => './scripts',
         ],
+        'logging' => [
+            'enabled' => true,            // 是否启用日志
+            'min_level' => 'INFO',        // 最低日志级别: DEBUG, INFO, WARNING, ERROR, CRITICAL
+            'max_size' => 10485760,       // 日志文件最大大小（字节），默认 10MB
+            'max_files' => 5,             // 保留的最大日志文件数
+        ],
     ];
 
     private string $globalConfigPath;
@@ -262,6 +268,39 @@ class ConfigManager
                 if (!is_string($value)) {
                     throw new RuntimeException(
                         'Invalid value for script.path. Must be a string'
+                    );
+                }
+                break;
+
+            case 'logging.min_level':
+                $validLevels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'];
+                if (!in_array($value, $validLevels, true)) {
+                    throw new RuntimeException(
+                        sprintf('Invalid value for logging.min_level. Must be one of: %s', implode(', ', $validLevels))
+                    );
+                }
+                break;
+
+            case 'logging.max_size':
+                if (!is_int($value) || $value < 1024) {
+                    throw new RuntimeException(
+                        'Invalid value for logging.max_size. Must be an integer >= 1024'
+                    );
+                }
+                break;
+
+            case 'logging.max_files':
+                if (!is_int($value) || $value < 1 || $value > 50) {
+                    throw new RuntimeException(
+                        'Invalid value for logging.max_files. Must be an integer between 1 and 50'
+                    );
+                }
+                break;
+
+            case 'logging.enabled':
+                if (!is_bool($value)) {
+                    throw new RuntimeException(
+                        'Invalid value for logging.enabled. Must be a boolean'
                     );
                 }
                 break;
