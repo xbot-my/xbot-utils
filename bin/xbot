@@ -9,6 +9,8 @@ use Symfony\Component\Console\Application;
 use Xbot\Utils\Command\CleanCommand;
 use Xbot\Utils\Command\SetupCommand;
 use Xbot\Utils\Command\SysinfoCommand;
+use Xbot\Utils\Command\SearchCommand;
+use Xbot\Utils\Command\InfoCommand;
 
 $autoloadPath = dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -23,4 +25,6 @@ $app = new Application('XBot Utils', '1.0.0');
 $app->addCommand(new CleanCommand());
 $app->addCommand(new SetupCommand());
 $app->addCommand(new SysinfoCommand());
+$app->addCommand(new SearchCommand());
+$app->addCommand(new InfoCommand());
 $app->run();
