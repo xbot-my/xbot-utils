@@ -9,10 +9,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Xbot\Utils\executeScript;
+use Xbot\Utils\ScriptExecutor;
+use Xbot\Utils\executeScriptWithResult;
 
 abstract class BaseScriptCommand extends Command
 {
     protected $scriptExecutor = null;
+
+    // 默认超时时间（秒），子类可以覆盖
+    protected int $scriptTimeout = 300;
 
     abstract protected function getScriptPath(): string;
     abstract protected function getStartMessage(): string;
@@ -24,6 +29,22 @@ abstract class BaseScriptCommand extends Command
     public function setScriptExecutor(?callable $executor): void
     {
         $this->scriptExecutor = $executor;
+    }
+
+    /**
+     * 获取脚本超时时间（秒）
+     */
+    protected function getScriptTimeout(): int
+    {
+        return $this->scriptTimeout;
+    }
+
+    /**
+     * 设置脚本超时时间
+     */
+    public function setScriptTimeout(int $timeout): void
+    {
+        $this->scriptTimeout = max(1, $timeout);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -39,8 +60,7 @@ abstract class BaseScriptCommand extends Command
         $args = array_slice($rawArgs, 2);
 
         try {
-            $executor = $this->scriptExecutor ?? fn($path, $args) => executeScript($path, $args);
-            $exitCode = $executor($scriptPath, $args);
+            $exitCode = $this->executeScript($scriptPath, $args);
 
             $io->newLine();
 
@@ -55,5 +75,38 @@ abstract class BaseScriptCommand extends Command
             $io->error($e->getMessage());
             return Command::FAILURE;
         }
+    }
+
+    /**
+     * 执行脚本
+     *
+     * 如果设置了自定义执行器，使用自定义执行器
+     * 否则使用默认的 executeScript 函数
+     */
+    protected function executeScript(string $scriptPath, array $args): int
+    {
+        if ($this->scriptExecutor !== null) {
+            return ($this->scriptExecutor)($scriptPath, $args);
+        }
+
+        // 使用相对路径执行脚本
+        $relativeScriptPath = $this->getScriptPath();
+        return executeScript($relativeScriptPath, $args);
+    }
+
+    /**
+     * 使用 ScriptExecutor 直接执行（需要结构化结果时使用）
+     *
+     * @return array{stdout: string, stderr: string, exitCode: int}
+     */
+    protected function executeScriptWithFullResult(string $scriptPath, array $args): array
+    {
+        $projectRoot = dirname(__DIR__, 2);
+        $relativePath = $this->getScriptPath();
+
+        $executor = new ScriptExecutor($projectRoot, ['scripts']);
+        $executor->setTimeout($this->getScriptTimeout());
+
+        return $executor->execute($relativePath, $args);
     }
 }
