@@ -6,6 +6,8 @@ namespace Xbot\Utils\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -128,5 +130,18 @@ class InfoCommand extends Command
     public static function commandExists(string $name): bool
     {
         return isset(self::COMMANDS[$name]);
+    }
+
+    /**
+     * 提供命令补全建议
+     */
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        parent::complete($input, $suggestions);
+
+        // 补全 name 参数：提供所有可用命令名称
+        if ($input->mustSuggestArgumentValuesFor('name')) {
+            $suggestions->suggestValues(self::getAvailableCommands());
+        }
     }
 }

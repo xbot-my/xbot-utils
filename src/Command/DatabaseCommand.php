@@ -7,6 +7,9 @@ namespace Xbot\Utils\Command;
 use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
+use Symfony\Component\Console\Completion\Suggestion;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -412,5 +415,30 @@ class DatabaseCommand extends BaseScriptCommand
         $io->writeln('  <fg=cyan>backup</>   - Create database backup');
         $io->writeln('  <fg=cyan>restore</>  - Restore database from backup');
         $io->writeln('  <fg=cyan>test</>     - Test database connection');
+    }
+
+    /**
+     * 提供命令补全建议
+     */
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        parent::complete($input, $suggestions);
+
+        // 补全 action 参数：migrate, backup, restore, test
+        if ($input->mustSuggestArgumentValuesFor('action')) {
+            $suggestions->suggestValues([
+                new Suggestion('migrate', 'Run database migrations'),
+                new Suggestion('backup', 'Create database backup'),
+                new Suggestion('restore', 'Restore database from backup'),
+                new Suggestion('test', 'Test database connection'),
+            ]);
+            return;
+        }
+
+        // 补全 --file 选项：列出可用的备份文件
+        if ($input->mustSuggestOptionValuesFor('file')) {
+            $backupFiles = $this->listBackupFiles();
+            $suggestions->suggestValues(array_map('basename', $backupFiles));
+        }
     }
 }

@@ -162,3 +162,60 @@ Each command test covers:
 ## License
 
 MIT
+
+## Shell Completion
+
+XBot Utils supports shell autocompletion for Bash, Zsh, and Fish.
+
+### Bash
+
+Add this to your `~/.bashrc`:
+
+```bash
+eval "$(/path/to/bin/xbot completion bash)"
+```
+
+Or install globally:
+
+```bash
+/path/to/bin/xbot completion bash | sudo tee /etc/bash_completion.d/xbot
+source /etc/bash_completion.d/xbot
+```
+
+### Zsh
+
+Add this to your `~/.zshrc`:
+
+```bash
+eval "$(/path/to/bin/xbot completion zsh)"
+```
+
+Or install globally:
+
+```bash
+/path/to/bin/xbot completion zsh | sudo tee $fpath[1]/_xbot
+exec zsh
+```
+
+### Fish
+
+Add this to your `~/.config/fish/config.fish`:
+
+```bash
+eval ("/path/to/bin/xbot completion fish" | source)
+```
+
+### Testing
+
+After installation, test the completion:
+
+```bash
+# Command name completion
+./bin/xbot con<TAB>  # Should complete to "config"
+
+# Argument completion
+./bin/xbot config <TAB>  # Should show: set, get, list, edit
+
+# Option completion
+./bin/xbot config --<TAB>  # Should show: --global, --json
+```

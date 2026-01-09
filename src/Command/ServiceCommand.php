@@ -7,6 +7,8 @@ namespace Xbot\Utils\Command;
 use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -106,5 +108,18 @@ class ServiceCommand extends BaseScriptCommand
         // 使用相对路径执行脚本
         $relativeScriptPath = $this->getScriptPath();
         return \Xbot\Utils\executeScript($relativeScriptPath, $args);
+    }
+
+    /**
+     * 提供命令补全建议
+     */
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        parent::complete($input, $suggestions);
+
+        // 补全 action 参数：start, stop, restart, status
+        if ($input->mustSuggestArgumentValuesFor('action')) {
+            $suggestions->suggestValues(self::ACTIONS);
+        }
     }
 }

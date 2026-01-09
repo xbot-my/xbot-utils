@@ -6,6 +6,8 @@ namespace Xbot\Utils\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -92,5 +94,19 @@ class SearchCommand extends Command
         }
 
         return $results;
+    }
+
+    /**
+     * 提供命令补全建议
+     */
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        parent::complete($input, $suggestions);
+
+        // 补全 keyword 参数：提供常用搜索词
+        if ($input->mustSuggestArgumentValuesFor('keyword')) {
+            $keywords = ['laravel', 'system', 'clean', 'setup', 'database', 'config'];
+            $suggestions->suggestValues($keywords);
+        }
     }
 }
