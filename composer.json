@@ -1,7 +1,7 @@
 {
     "name": "xbot-my/xbot-utils",
     "description": "Utility tools for develop or manage project.",
-    "type": "metapackage",
+    "type": "library",
     "require": {
         "php": "^8.3",
         "symfony/console": "^7.4"
